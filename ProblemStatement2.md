@@ -45,6 +45,6 @@ The application should adhere to the following API format and response codes in 
 
   - If balance is insufficient: Return status: "REJECTED" with code 403.
 
-  - *Edge Case*: If rejected due to insufficient funds, check if the query is missing the keyword "LIMIT". If missing, return status: "OPTIMIZATION_SUGGESTED" with code 200 instead of 403. (Cost deducted: 0).
+  - **Edge Case**: If rejected due to insufficient funds, check if the query is missing the keyword "LIMIT". If missing, return status: "OPTIMIZATION_SUGGESTED" with code 200 instead of 403. (Cost deducted: 0).
 
 
