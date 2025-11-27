@@ -35,36 +35,36 @@ The Middleware returns a specific JSON object when the circuit is **OPEN** (Bloc
 
 - #### Failure Threshold (Tripping the Circuit):
 
--   Condition: If 5 consecutive requests result in HTTP 500 errors.
-    
--   Side-Effect: Transition state to OPEN. All subsequent requests must be blocked immediately without touching the view.
+    -   Condition: If 5 consecutive requests result in HTTP 500 errors.
         
--   Response code becomes 503.
-    
+    -   Side-Effect: Transition state to OPEN. All subsequent requests must be blocked immediately without touching the view.
+            
+    -   Response code becomes 503.
+        
 
 - #### Blocking (Open State):
 
--   Constraint: The circuit remains OPEN for 60 seconds.
-    
--   Returns the Error JSON with `retry_after` calculated dynamically.
-    
--   Response code is 503.
+    -   Constraint: The circuit remains OPEN for 60 seconds.
+        
+    -   Returns the Error JSON with `retry_after` calculated dynamically.
+        
+    -   Response code is 503.
     
 
 - #### Recovery (Half-Open State):
 
--   Condition: After 60 seconds, allow exactly one request to pass through.
-    
--   Side-Effect (Success): If that request returns 200, reset failure count to 0 (State: CLOSED).
-    
--   Side-Effect (Failure): If that request returns 500, reset the timer to 60s (State: OPEN).
-    
--   Returns status code **200**.
+    -   Condition: After 60 seconds, allow exactly one request to pass through.
+        
+    -   Side-Effect (Success): If that request returns 200, reset failure count to 0 (State: CLOSED).
+        
+    -   Side-Effect (Failure): If that request returns 500, reset the timer to 60s (State: OPEN).
+        
+    -   Returns status code **200**.
     
 
 **Technical Constraints**:
 
--  **State Persistence**: Circuit state (failure counts, timestamps) must be stored using Django's default Cache backend (`django.core.cache`). Do not use global variables.
-
--  **Scope Isolation** : The middleware must only act on the `/api/resource/` path. All other endpoints must remain unaffected.
+    -  **State Persistence**: Circuit state (failure counts, timestamps) must be stored using Django's default Cache backend (`django.core.cache`). Do not use global variables.
+    
+    -  **Scope Isolation** : The middleware must only act on the `/api/resource/` path. All other endpoints must remain unaffected.
 
