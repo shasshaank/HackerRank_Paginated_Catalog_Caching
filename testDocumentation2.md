@@ -1,5 +1,5 @@
 
-```markdown
+
 # Test Case Specification
 ## Smart Query Cost Optimizer API
 
