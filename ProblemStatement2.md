@@ -74,6 +74,6 @@ The application should adhere to the following API format and response codes in 
 
 **Cost Logic**:
 
-- Complex Query: Contains "JOIN" -> 50 credits
+- Complex Query: Contains `"JOIN"` -> 50 credits
 
 - Simple Query: Everything else -> 10 credits
