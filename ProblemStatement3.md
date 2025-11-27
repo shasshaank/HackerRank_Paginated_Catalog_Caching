@@ -1,65 +1,51 @@
 
 # Django REST Framework: Intelligent Audit Trail System
 
-In this project, you are building a production-grade **User Management System** that requires strict auditability, data recovery capabilities, and concurrency control.
+Your task is to implement a **User Management API** that enforces strict auditability, optimistic concurrency control, and point-in-time recovery.
 
-Your task is to implement a system where every change to a `User` record is automatically tracked, soft-deletes are supported, and records can be "rolled back" to any previous state using a comprehensive Audit Log.
+**Entities**
 
-Here is an example of a User creation request JSON object:
+Each **User** is a JSON object with the following properties:
+* **id**: unique integer ID.
+* **email**: unique string.
+* **version**: integer (incremented on every update).
+* **role**: string enum (`"USER"`, `"ADMIN"`, `"MANAGER"`).
 
-```
-{
-  "email": "jane.doe@example.com",
-  "name": "Jane Doe",
-  "role": "MANAGER",
-  "department": "Engineering"
-}
-
-```
-
-Here is an example of a successful response JSON object:
-
-```
+**Sample User JSON:**
+```json
 {
   "id": 1,
-  "email": "jane.doe@example.com",
-  "version": 1,
-  "created_at": "2023-10-27T10:00:00Z"
+  "email": "jane@corp.com",
+  "role": "MANAGER",
+  "version": 1
 }
-
 ```
 
-The application should adhere to the following API format and response codes in `UserController` (or `views.py`):
+**API Specification**
 
 **1. POST /api/users/**:
 
--   Creates a new user.
-    
--   Must automatically generate a `CREATE` entry in the `AuditLog` table via Signals.
-    
--   Returns status code **201**.
+- Creates a new user from the payload (email, name, role, department).
+
+- Side-Effect: Triggers a CREATE Audit Log entry via Signals.
+
+- Response code is 201.
     
 
 **2. PUT /api/users/{id}/**:
 
 -   Updates user details.
     
--   **Optimistic Locking:** The request body MUST include the current `version`.
-    
-    -   If `request.version != db.version`: Return status code **409 Conflict**.
+-   **Concurrency** : Enforce Optimistic Locking. The request must fail atomically if the payload `version` does not match the database `version`.
         
-    -   If versions match: Update the record, increment `version`, and return **200**.
-        
--   Must automatically calculate the difference (diff) between old and new values and store it in the `AuditLog` table via Signals.
+-   **Side-Effect**: Triggers an `UPDATE` Audit Log entry containing the field difference (`diff`).
     
 
 **3. DELETE /api/users/{id}/**:
 
--   Performs a **Soft Delete** (sets `is_deleted=True`).
+-   Performs a **Soft Delete**.
     
 -   Must generate a `DELETE` entry in the `AuditLog`.
-    
--   The record must NOT be physically removed from the database.
     
 -   Returns status code **204**.
     
@@ -75,30 +61,10 @@ The application should adhere to the following API format and response codes in 
 -   Returns status code **200**.
     
 
-**Implementation Requirements**:
+**Technical Constraints**:
 
--   **Models:**
-    
-    -   `AuditedModel` (Abstract): Includes `version` (int), `is_deleted` (bool), `created_at`, `updated_at`.
-        
-    -   `User`: Inherits from `AuditedModel`. Fields: `email` (unique), `name`, `role` (USER/ADMIN/MANAGER), `department`.
-        
-    -   `AuditLog`: Stores `model_name`, `object_id`, `action` (CREATE/UPDATE/DELETE/ROLLBACK), `changed_by` (username), `diff` (JSON), `version_snapshot`.
-        
--   **Middleware & Thread-Local Storage:**
-    
-    -   Django Signals cannot access `request.user` directly.
-        
-    -   The AuditLog must record the username of the person making the change. Note that auditing happens in Signals, which do not natively have access to the request object. You must implement a thread-safe solution to pass the user context to the signal."
-        
--   **Signals (Automation):**
-    
-    - The system must automatically detect changes to model fields and save the difference (Old vs New) to the log whenever .save() is called on a User instance.
-        
--   **Concurrency:**
-    
-    -   Implement **Optimistic Locking** using the `version` field to prevent lost updates.
-        
-**Constraints**:
+-  **Decoupled Auditing**: All audit logging must be implemented via Django Signals (post_save/post_delete), not in View logic.
 
--   Do not use third-party audit libraries (e.g., `django-simple-history`); implement the logic yourself.
+-  **Context Propagation**: You must implement a thread-safe mechanism to propagate the request.user (actor) to the Signal handler to populate AuditLog.changed_by.
+
+No 3rd Party Libs: Use standard Django APIs only.
