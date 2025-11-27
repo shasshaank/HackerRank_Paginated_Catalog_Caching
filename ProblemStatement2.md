@@ -31,7 +31,7 @@ The application should adhere to the following API format and response codes in 
 
 - *Pricing Logic*:
 
-  - 50 Credits: If the query contains the keyword "JOIN" (case-insensitive).
+  - 50 Credits: If the query contains the keyword `"JOIN"`.
 
   - 10 Credits: All other queries.
 
@@ -48,9 +48,3 @@ The application should adhere to the following API format and response codes in 
   - *Edge Case*: If rejected due to insufficient funds, check if the query is missing the keyword "LIMIT". If missing, return status: "OPTIMIZATION_SUGGESTED" with code 200 instead of 403. (Cost deducted: 0).
 
 
-
-**Cost Logic**:
-
-- Complex Query: Contains `"JOIN"` -> 50 credits
-
-- Simple Query: Everything else -> 10 credits
