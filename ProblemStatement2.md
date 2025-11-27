@@ -1,3 +1,4 @@
+
 # Django REST Framework: Smart Query Cost Optimizer API
 
 In this project, you are building a **Query Execution Service** where clients execute SQL queries against a database. Clients have a credit balance and are charged for every query they run.
@@ -34,23 +35,23 @@ The application should adhere to the following API format and response codes in 
 
 - **Check Budget**:
 
-- Standard Tier: Balance cannot go below 0.
+  - Standard Tier: Balance cannot go below 0.
 
-- Premium Tier: Balance can go down to -100 (overdraft allowed).
+   - Premium Tier: Balance can go down to -100 (overdraft allowed).
 
 - **Execution**:
 
-- If `(Current Balance - Cost)` is valid according to the tier rules: Deduct cost, update balance, and return `status: "ACCEPTED"` with code 201.
+   - If `(Current Balance - Cost)` is valid according to the tier rules: Deduct cost, update balance, and return `status: "ACCEPTED"` with code 201.
 
-- If budget is insufficient: Return `status: "REJECTED"`with code 403.
+   - If budget is insufficient: Return `status: "REJECTED"`with code 403.
 
 - **Optimization Hint**:
 
-- If budget is insufficient BUT the query is missing the word `"LIMIT"`, return `status: "OPTIMIZATION_SUGGESTED"` with code 200 instead of 403.
+  - If budget is insufficient BUT the query is missing the word `"LIMIT"`, return `status: "OPTIMIZATION_SUGGESTED"` with code 200 instead of 403.
 
-- The implementation must handle concurrent requests safely.
+  - The implementation must handle concurrent requests safely.
 
-- Note: The `message` field in the response is informational only. The evaluation will NOT check the content of `message`. Only `status`, `remaining_budget`, `cost_deducted`, and `HTTP status code` will be validated.
+   - Note: The `message` field in the response is informational only. The evaluation will NOT check the content of `message`. Only `status`, `remaining_budget`, `cost_deducted`, and `HTTP status code` will be validated.
 
 **Implementation Requirements**:
 
