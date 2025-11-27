@@ -64,7 +64,7 @@ The Middleware returns a specific JSON object when the circuit is **OPEN** (Bloc
 
 **Technical Constraints**:
 
-    -  **State Persistence**: Circuit state (failure counts, timestamps) must be stored using Django's default Cache backend (`django.core.cache`). Do not use global variables.
-    
-    -  **Scope Isolation** : The middleware must only act on the `/api/resource/` path. All other endpoints must remain unaffected.
+  -  **State Persistence**: Circuit state (failure counts, timestamps) must be stored using Django's default Cache backend (`django.core.cache`). Do not use global variables.
+  
+  -  **Scope Isolation** : The middleware must only act on the `/api/resource/` path. All other endpoints must remain unaffected.
 
